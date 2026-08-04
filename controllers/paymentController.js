@@ -3,6 +3,7 @@ import { verifyPaymentSignature } from "../services/razorpayService.js";
 import Payment from "../models/Payment.js";
 import User from "../models/User.js";
 import Ticket from "../models/Ticket.js";
+import Settings from "../models/Settings.js";
 import { generateUniqueTicketCode } from "../utils/generateTicketCode.js";
 
 
@@ -134,6 +135,9 @@ export const verifyPayment = async (req, res) => {
         // Generate a unique ticket code
         const ticketCode = await generateUniqueTicketCode();
 
+        let settings = await Settings.findOne();
+        let currentFee = settings ? settings.entryFee : 150;
+
         // Create the ticket
         const ticket = await Ticket.create({
             ticketCode,
@@ -142,7 +146,7 @@ export const verifyPayment = async (req, res) => {
             phone,
             department,
 
-            ticketPrice: 150,
+            ticketPrice: currentFee,
             paymentStatus: "completed",
 
             razorpayOrderId: razorpay_order_id,
@@ -152,7 +156,7 @@ export const verifyPayment = async (req, res) => {
             ticket: ticket._id,
             user: user._id,
 
-            amount: 150,
+            amount: currentFee,
             currency: "INR",
             status: "completed",
 

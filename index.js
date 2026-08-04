@@ -4,7 +4,9 @@ import dotenv from "dotenv";
 
 import connectDB from "./config/db.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
 import User from "./models/User.js";
+import { getSettings } from "./controllers/adminController.js";
 
 dotenv.config();
 
@@ -17,8 +19,14 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Public Routes
+app.get("/api/public/settings", getSettings);
+
 // Payment Routes
 app.use("/api/payments", paymentRoutes);
+
+// Admin Routes
+app.use("/api/admin", adminRoutes);
 
 // Health Check
 app.get("/", (req, res) => {
